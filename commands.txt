@@ -1,18 +1,1 @@
-python -m pip install -r requirements.txt
-python -m uvicorn server:app --reload
-https://console.cloud.google.com/
-mongodb+srv://brushedentree:987654321@cluster0.i8jc6vi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-mongodb://atlas-sql-6919a1a92b0b7d2f134e0118-eewywa.a.query.mongodb.net/myVirtualDatabase?ssl=true&authSource=admin
-277819751478-4fo2g4s6a4t3odgiafecrel7oe9e09jl.apps.googleusercontent.com
-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
-git add .
-git remote remove origin
-git remote add origin 
-git remote -v 
-git add .gitignore
-git config --global user.email "s.vashishta.123@gmail.com"
-git config --global user.name "BrushedEntree"
-git commit -m "changed something"
-git push -u origin main
-git push --set-upstream origin main --force
-git push
+

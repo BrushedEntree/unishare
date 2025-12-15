@@ -1,0 +1,719 @@
+CN Set-Wise Lab External Answers
+
+
+SET 1
+
+a) ifconfig,netstat
+Ifconfig :
+ifconfig -a
+ifconfig enp0s3
+ifconfig lo
+sudo ifconfig enp0s3 up
+sudo ifconfig enp0s3 down
+ifconfig -s
+Description :
+ ifconfig – Displays all currently active network interfaces and their configurations.
+• ifconfig -a – Shows all network interfaces, including inactive ones.
+• ifconfig enp0s3 – Displays detailed configuration of the enp0s3 Ethernet interface.
+• ifconfig lo – Shows configuration details of the loopback (lo) interface.
+• sudo ifconfig enp0s3 up – Activates/enables the enp0s3 network interface.
+• sudo ifconfig enp0s3 down – Deactivates/disables the enp0s3 network interface.
+• ifconfig -s – Displays a short summary of all interfaces in tabular form.
+
+Netstat :
+• netstat – Displays overall network statistics and all active network connections.
+• netstat -rn – Shows the routing table in numeric format, including destination,
+gateway, netmask, and interface.
+• netstat -a – Displays all active connections and listening ports.
+• netstat -t – Shows only TCP connections.
+• netstat -u – Shows only UDP connections.
+• netstat -i – Displays statistics of all network interfaces.
+
+b)Write a program to illustrate connection oriented iterative Server
+Server Program :
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+int main() {
+int sockfd, newsockfd;
+ sockaddr_in serv, cli;
+ char buf[50];
+ socklen_t clilen;
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+if (sockfd < 0) { printf("Socket error\n"); exit(1); }
+serv.sin_family = AF_INET;
+serv.sin_addr.s_addr = htonl(INADDR_ANY);
+serv.sin_port = htons(4568);
+if (bind(sockfd, (struct sockaddr *)&serv, sizeof(serv)) < 0) {
+ printf("Bind error\n"); exit(1);
+}
+listen(sockfd, 5);
+printf("Server waiting… type 'exit' to stop.\n");
+clilen = sizeof(cli);
+while (1) {
+ newsockfd = accept(sockfd, (struct sockaddr *)&cli, &clilen);
+ memset(buf, 0, sizeof(buf));
+ read(newsockfd, buf, sizeof(buf));
+ printf("Received: %s\n", buf);
+ write(newsockfd, buf, sizeof(buf));
+ close(newsockfd);
+ if (strcmp(buf, "exit") == 0)
+ break;
+}
+printf("Server closed.\n");
+close(sockfd);
+return 0;
+}
+
+Client Program :
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+int main()
+{ int sockfd;
+struct sockaddr_in serv;
+char msg[50], rcv[50];
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+if (sockfd < 0) { printf("Socket error\n"); exit(1); }
+serv.sin_family = AF_INET;
+serv.sin_addr.s_addr = inet_addr("127.0.0.1");
+serv.sin_port = htons(4568);
+if (connect(sockfd, (struct sockaddr *)&serv, sizeof(serv)) < 0) {
+ printf("Connect failed\n"); exit(1);
+}
+printf("Enter message: ");
+fgets(msg, sizeof(msg), stdin);
+write(sockfd, msg, sizeof(msg));
+read(sockfd, rcv, sizeof(rcv));
+printf("Echo from server: %s\n", rcv);
+if (strcmp(rcv, "exit") == 0)
+ printf("Closing client\n");
+close(sockfd);
+return 0;
+}
+
+
+SET 2
+
+tcpdump,nslookup
+TCPDUMP :
+• tcpdump --version – Checks whether tcpdump is installed on the system.
+• sudo dnf install -y tcpdump – Installs tcpdump using the package manager
+(Fedora/RHEL).
+• tcpdump -D – Displays all available network interfaces that can be used for packet
+capture.
+• sudo tcpdump -i any – Captures all packets on all active network interfaces.
+• sudo tcpdump -i any -c5 – Captures only 5 packets and then stops
+automatically.
+• sudo tcpdump -i any -c5 icmp – Captures only ICMP protocol packets.
+• sudo tcpdump -i any -c5 tcp – Captures only TCP protocol packets.
+
+NSLOOKUP :
+• nslookup domainname – Looks up the IP address of a given domain.
+• nslookup 8.8.8.8 – Performs a reverse lookup (IP → domain name).
+• nslookup mvsrec.edu.in – Queries DNS to find the IP address for the domain
+mvsrec.edu.in.
+• nslookup -type=MX domainname – Fetches MX (Mail Exchanger) records for a
+domain.
+
+Write a program to illustrate connection less iterative Server
+Server Program :
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <unistd.h>
+int main()
+{
+int sockfd, clilen;
+struct sockaddr_in serv_addr, cli_addr; char msg[80];
+sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+if (sockfd < 0) {
+ printf("\nSocket Failed");
+ exit(1);
+}
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+serv_addr.sin_port = htons(3456);
+if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) <
+0) {
+ printf("\nBind Failed");
+ exit(1);
+}
+clilen = sizeof(cli_addr);
+printf("Server waiting for message...\n");
+recvfrom(sockfd, msg, sizeof(msg), 0, (struct sockaddr *)&cli_addr,
+&clilen);
+printf("\nServer Received: %s\n", msg);
+sendto(sockfd, msg, sizeof(msg), 0, (struct sockaddr *)&cli_addr,
+clilen);
+close(sockfd);
+return 0; }
+
+Client Program :
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
+int main()
+{ int sockfd, n, servlen;
+struct sockaddr_in cli_addr, serv_addr ;
+char msg[50], msg1[50] ;
+sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+if (sockfd < 0) {
+ printf("\nSocket Failed");
+ exit(1);
+}
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_addr.s_addr = inet_addr("192.168.2.58"); // Server IP
+serv_addr.sin_port = htons(3456);
+cli_addr.sin_family = AF_INET;
+cli_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+cli_addr.sin_port = htons(0);
+if (bind(sockfd, (struct sockaddr *)&cli_addr, sizeof(cli_addr)) < 0)
+{
+ printf("\nClient can't bind");
+ exit(1);
+}
+printf("Enter String: ");
+fgets(msg, 50, stdin);
+if (sendto(sockfd, msg, 50, 0, (struct sockaddr *)&serv_addr,
+sizeof(serv_addr)) < 0) {
+ printf("\nClient sendto error");
+ exit(1);
+}
+servlen = sizeof(serv_addr);
+n = recvfrom(sockfd, msg1, 50, 0, (struct sockaddr *)&serv_addr,
+&servlen);
+if (n < 0) {
+ printf("\nReceive error");
+ exit(1);
+} else {
+ printf("\nClient received msg: %s\n", msg1);
+}
+close(sockfd);
+return 0;
+}
+
+
+SET 3
+
+traceroute,FTP
+Traceroute :
+ sudo apt install traceroute – Installs the traceroute tool.
+• traceroute <hostname/IP> – Traces the path packets take to the destination.
+• traceroute google.com – Shows all hops between your system and google.com.
+• traceroute -n <IP> – Shows only numeric IPs (skips DNS lookup).
+• traceroute -m 20 <IP> – Sets maximum hop count to 20.
+• traceroute -w 2 <IP> – Sets a 2-second timeout for each hop.
+FTP :
+ ftp [IP] – Connect to a remote FTP server using its IP address.
+• ftp 192.168.100.9 – Example command to connect to the FTP server at
+192.168.100.9.
+• (Enter Username) – Provide the FTP username when prompted.
+• (Enter Password) – Provide the FTP password to log in.
+
+Write a program to illustrate connection oriented concurrent Server
+Server Program :
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+int main() {
+int sockfd, newsockfd;
+ sockaddr_in serv, cli;
+ char buf[50];
+ socklen_t clilen;
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+if (sockfd < 0) { printf("Socket error\n"); exit(1); }
+serv.sin_family = AF_INET;
+serv.sin_addr.s_addr = htonl(INADDR_ANY);
+serv.sin_port = htons(4568);
+if (bind(sockfd, (struct sockaddr *)&serv, sizeof(serv)) < 0) {
+ printf("Bind error\n"); exit(1);
+}
+listen(sockfd, 5);
+printf("Server waiting… type 'exit' to stop.\n");
+clilen = sizeof(cli);
+while (1) {
+ newsockfd = accept(sockfd, (struct sockaddr *)&cli, &clilen);
+ memset(buf, 0, sizeof(buf));
+ read(newsockfd, buf, sizeof(buf));
+ printf("Received: %s\n", buf);
+ write(newsockfd, buf, sizeof(buf));
+ close(newsockfd);
+ if (strcmp(buf, "exit") == 0)
+ break;
+}
+printf("Server closed.\n");
+close(sockfd);
+return 0;
+}
+
+Client Program :
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+int main()
+{ int sockfd;
+struct sockaddr_in serv;
+char msg[50], rcv[50];
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+if (sockfd < 0) { printf("Socket error\n"); exit(1); }
+serv.sin_family = AF_INET;
+serv.sin_addr.s_addr = inet_addr("127.0.0.1");
+serv.sin_port = htons(4568);
+if (connect(sockfd, (struct sockaddr *)&serv, sizeof(serv)) < 0) {
+ printf("Connect failed\n"); exit(1);
+}
+printf("Enter message: ");
+fgets(msg, sizeof(msg), stdin);
+write(sockfd, msg, sizeof(msg));
+read(sockfd, rcv, sizeof(rcv));
+printf("Echo from server: %s\n", rcv);
+if (strcmp(rcv, "exit") == 0)
+ printf("Closing client\n");
+close(sockfd);
+return 0;
+}
+
+
+SET 4
+
+telnet,ping
+Telnet Commands :
+• telnet <hostname> – Connects to a remote host using the default port 23.
+• telnet google.com 80 – Connects to google.com on port 80 (HTTP) to check if the
+port is open.
+• telnet smtp.gmail.com 25 – Connects to Gmail’s SMTP server on port 25 for testing
+mail server connectivity.
+
+Ping Commands :
+• ping <domain_or_IP> – Tests the reachability of a host and measures round-trip
+time.
+• ping -c 5 <domain_or_IP> – Sends 5 ping packets to the host and then stops.
+
+Write a program to illustrate connection less concurrent Server
+Server Program :
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <unistd.h>
+int main()
+{
+int sockfd, clilen;
+struct sockaddr_in serv_addr, cli_addr; char msg[80];
+sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+if (sockfd < 0) {
+ printf("\nSocket Failed");
+ exit(1);
+}
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+serv_addr.sin_port = htons(3456);
+if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+ printf("\nBind Failed");
+ exit(1);
+}
+clilen = sizeof(cli_addr);
+printf("Server waiting for message...\n");
+recvfrom(sockfd, msg, sizeof(msg), 0, (struct sockaddr *)&cli_addr, &clilen);
+printf("\nServer Received: %s\n", msg);
+sendto(sockfd, msg, sizeof(msg), 0, (struct sockaddr *)&cli_addr, clilen);
+close(sockfd);
+return 0; }
+
+Client Program :
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
+int main()
+{ int sockfd, n, servlen;
+struct sockaddr_in cli_addr, serv_addr ;
+char msg[50], msg1[50] ;
+sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+if (sockfd < 0) {
+ printf("\nSocket Failed");
+ exit(1);
+}
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_addr.s_addr = inet_addr("192.168.2.58"); // Server IP
+serv_addr.sin_port = htons(3456);
+cli_addr.sin_family = AF_INET;
+cli_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+cli_addr.sin_port = htons(0);
+if (bind(sockfd, (struct sockaddr *)&cli_addr, sizeof(cli_addr)) < 0) {
+ printf("\nClient can't bind");
+ exit(1);
+}
+printf("Enter String: ");
+fgets(msg, 50, stdin);
+if (sendto(sockfd, msg, 50, 0, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+ printf("\nClient sendto error");
+ exit(1);
+}
+servlen = sizeof(serv_addr);
+n = recvfrom(sockfd, msg1, 50, 0, (struct sockaddr *)&serv_addr, &servlen);
+if (n < 0) {
+ printf("\nReceive error");
+ exit(1);
+} else {
+ printf("\nClient received msg: %s\n", msg1);
+}
+close(sockfd);
+return 0;
+}
+
+
+SET 5
+
+ifconfig,netstat.
+Ifconfig :
+ifconfig -a
+ifconfig enp0s3
+ifconfig lo
+sudo ifconfig enp0s3 up
+sudo ifconfig enp0s3 down
+ifconfig -s
+Description :
+ ifconfig – Displays all currently active network interfaces and their configurations.
+• ifconfig -a – Shows all network interfaces, including inactive ones.
+• ifconfig enp0s3 – Displays detailed configuration of the enp0s3 Ethernet interface.
+• ifconfig lo – Shows configuration details of the loopback (lo) interface.
+• sudo ifconfig enp0s3 up – Activates/enables the enp0s3 network interface.
+• sudo ifconfig enp0s3 down – Deactivates/disables the enp0s3 network interface.
+• ifconfig -s – Displays a short summary of all interfaces in tabular form.
+
+Netstat :
+• netstat – Displays overall network statistics and all active network connections.
+• netstat -rn – Shows the routing table in numeric format, including destination,
+gateway, netmask, and interface.
+• netstat -a – Displays all active connections and listening ports.
+• netstat -t – Shows only TCP connections.
+• netstat -u – Shows only UDP connections.
+netstat -i – Displays statistics of all network interfaces.
+
+Write a program to illustrate date time client/Server.
+Date Time Server :
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <time.h>
+int main()
+{ int sockfd, newsockfd;
+struct sockaddr_in serv_addr, cli_addr;
+socklen_t clilen;
+char buf[50];
+time_t now; struct tm present;
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+serv_addr.sin_port = htons(3100);
+bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+listen(sockfd, 5);
+clilen = sizeof(cli_addr);
+while (1) {
+ newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+ memset(buf, 0, sizeof(buf));
+ read(newsockfd, buf, sizeof(buf));
+ time(&now);
+ present = *localtime(&now);
+ sprintf(buf, "Time: %d-%d-%d %d:%d:%d\n",
+ present.tm_year + 1900, present.tm_mon + 1, present.tm_mday,
+ present.tm_hour, present.tm_min, present.tm_sec);
+ write(newsockfd, buf, sizeof(buf));
+ close(newsockfd);
+}
+return 0;
+}
+
+Date Time Client :
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+int main()
+{ int sockfd;
+struct sockaddr_in serv_addr;
+char buf[50];
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+serv_addr.sin_port = htons(3100);
+connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+write(sockfd, buf, sizeof(buf));
+read(sockfd, buf, sizeof(buf));
+printf("Client Received: %s\n", buf);
+close(sockfd);
+return 0;
+}
+
+
+SET 6
+tcpdump,nslookup
+TCPDUMP :
+• tcpdump --version – Checks whether tcpdump is installed on the system.
+• sudo dnf install -y tcpdump – Installs tcpdump using the package manager
+(Fedora/RHEL).
+• tcpdump -D – Displays all available network interfaces that can be used for packet
+capture.
+• sudo tcpdump -i any – Captures all packets on all active network interfaces.
+• sudo tcpdump -i any -c5 – Captures only 5 packets and then stops
+automatically.
+• sudo tcpdump -i any -c5 icmp – Captures only ICMP protocol packets.
+• sudo tcpdump -i any -c5 tcp – Captures only TCP protocol packets.
+
+NSLOOKUP :
+• nslookup domainname – Looks up the IP address of a given domain.
+• nslookup 8.8.8.8 – Performs a reverse lookup (IP → domain name).
+• nslookup mvsrec.edu.in – Queries DNS to find the IP address for the domain
+mvsrec.edu.in.
+• nslookup -type=MX domainname – Fetches MX (Mail Exchanger) records for a
+domain.
+
+Using CPT to connect to end systems and establish communication between them.
+
+Step 1: Add two end devices on to the work space and connect them using automatic cable
+Step 2: Click on computer so that u get:
+Step 3: In Desktop tab, select IP Configuration and give 192.168.10.10 in IPv4 address text box and press tab
+Step 4: use ipconfig to get ip of host
+Step 5: use ping to verify connection 
+
+SET 7
+
+Traceroute,FTP
+
+Traceroute :
+ sudo apt install traceroute – Installs the traceroute tool.
+• traceroute <hostname/IP> – Traces the path packets take to the destination.
+• traceroute google.com – Shows all hops between your system and google.com.
+• traceroute -n <IP> – Shows only numeric IPs (skips DNS lookup).
+• traceroute -m 20 <IP> – Sets maximum hop count to 20.
+• traceroute -w 2 <IP> – Sets a 2-second timeout for each hop.
+
+FTP :
+ ftp [IP] – Connect to a remote FTP server using its IP address.
+• ftp 192.168.100.9 – Example command to connect to the FTP server at 192.168.100.9.
+• (Enter Username) – Provide the FTP username when prompted.
+• (Enter Password) – Provide the FTP password to log in.
+
+Using CPT to configure router to establish connection between
+two different networks.
+
+• Step 1: Add devices
+o Add PCs, switches (2960), and a router (1941).
+o Connect them to form two networks.
+• Step 2: Assign IP addresses to end devices
+o Network 1: PC0 → 192.168.10.10, PC1 → 192.168.10.20
+o Network 2: PC2 → 192.168.20.10, PC3 → 192.168.20.20
+• Step 3: Open Router CLI
+o Click on the router and go to the CLI tab.
+• Step 4: Skip initial configuration dialog
+o Type n when prompted and press Enter.
+o You will be in User EXEC Mode (> prompt).
+• Step 5: Enter Privileged EXEC Mode
+o Type enable.
+o Now in Privileged Mode (# prompt).
+• Step 6: View current configuration
+o Type show running-config.
+o Displays the current router settings.
+• Step 7: Enter Global Configuration Mode
+o Type configure terminal.
+o Now in Global Configuration Mode.
+• Step 8: Enter interface configuration mode
+o Type interface gigabitEthernet 0/0.
+• Step 9: Assign IP address to interface
+o Type ip address 192.168.10.100 255.255.255.0.
+• Step 10: Enable the interface
+o Type no shutdown.
+o Interface turns from administratively down (red) to up (green).
+• Step 11: Exit interface configuration mode
+o Type exit to return to Privileged EXEC Mode.
+• Step 12: Repeat for the second interface
+o Type interface gigabitEthernet 0/1.
+o Assign IP address and no shutdown.
+
+
+SET 8
+telnet,ping
+
+Telnet Commands :
+• telnet <hostname> – Connects to a remote host using the default port 23.
+• telnet google.com 80 – Connects to google.com on port 80 (HTTP) to check if the
+port is open.
+• telnet smtp.gmail.com 25 – Connects to Gmail’s SMTP server on port 25 for testing
+mail server connectivity.
+
+Ping Commands :
+• ping <domain_or_IP> – Tests the reachability of a host and measures round-trip
+time.
+ping -c 5 <domain_or_IP> – Sends 5 ping packets to the host and then stops
+
+CAPTURING THE TRAFFIC using wireshark
+
+
+SET 9
+Write a program to illustrate date time client/Server.
+
+Date Time Server :
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <time.h>
+int main()
+{ int sockfd, newsockfd;
+struct sockaddr_in serv_addr, cli_addr;
+socklen_t clilen;
+char buf[50];
+time_t now; struct tm present;
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+serv_addr.sin_port = htons(3100);
+bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+listen(sockfd, 5);
+clilen = sizeof(cli_addr);
+while (1) {
+ newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+ memset(buf, 0, sizeof(buf));
+ read(newsockfd, buf, sizeof(buf));
+ time(&now);
+ present = *localtime(&now);
+ sprintf(buf, "Time: %d-%d-%d %d:%d:%d\n",
+ present.tm_year + 1900, present.tm_mon + 1, present.tm_mday,
+ present.tm_hour, present.tm_min, present.tm_sec);
+ write(newsockfd, buf, sizeof(buf));
+ close(newsockfd);
+}
+return 0;
+}
+
+Date Time Client :
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+int main()
+{ int sockfd;
+struct sockaddr_in serv_addr;
+char buf[50];
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+serv_addr.sin_port = htons(3100);
+connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+write(sockfd, buf, sizeof(buf));
+read(sockfd, buf, sizeof(buf));
+printf("Client Received: %s\n", buf);
+close(sockfd);
+return 0;
+}
+
+CAPTURING THE TRAFFIC using wireshark
+
+
+SET—10
+
+Program to implement DNS
+#include<stdio.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+#include<netinet/in.h>
+#include<stdlib.h>
+int main(int argc, char** argv)
+{ struct hostent *host;
+struct in_addr h_addr;
+if (argc != 2)
+{
+ fprintf(stderr, "USAGE: nslookup <hostname>\n");
+ exit(1);
+}
+if ((host = gethostbyname(argv[1])) == NULL)
+{
+ fprintf(stderr, "(mini)nslookup failed on %s\n", argv[1]);
+ exit(1);
+}
+h_addr.s_addr = *((unsigned long*)host->h_addr_list[0]);
+printf("\nIP ADDRESS = %s\n", inet_ntoa(h_addr));
+printf("HOST NAME = %s\n", host->h_name);
+printf("ADDRESS LENGTH = %d\n", host->h_length);
+printf("ADDRESS TYPE = %d\n", host->h_addrtype);
+return 0;
+}
+
+FILTERING TRAFFIC using wireshark.
+
+
+SET—11
+
+WIRESHARK STATISTICS.
+
+
+Program to implement select socket system call.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/select.h>
+int main()
+{ int sockfd, connfd;
+struct sockaddr_in servaddr;
+fd_set readfds;
+char buffer[1024];
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+servaddr.sin_family = AF_INET;
+servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+servaddr.sin_port = htons(5000);
+bind(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr));
+listen(sockfd, 1);
+connfd = accept(sockfd, NULL, NULL);
+while (1) {
+ FD_ZERO(&readfds);
+ FD_SET(0, &readfds);
+ FD_SET(connfd, &readfds);
+ select(connfd + 1, &readfds, NULL, NULL, NULL);
+ if (FD_ISSET(0, &readfds)) {
+ memset(buffer, 0, sizeof(buffer));
+ read(0, buffer, sizeof(buffer));
+ write(connfd, buffer, strlen(buffer));
+ }
+ if (FD_ISSET(connfd, &readfds)) {
+ memset(buffer, 0, sizeof(buffer));
+ read(connfd, buffer, sizeof(buffer));
+ printf("Received: %s\n", buffer);
+ }
+}
+close(connfd);
+close(sockfd);
+return 0;
+}

@@ -639,7 +639,7 @@ return 0;
 CAPTURING THE TRAFFIC using wireshark
 
 
-SET—10
+SET 10
 
 Program to implement DNS
 #include<stdio.h>
@@ -671,7 +671,7 @@ return 0;
 FILTERING TRAFFIC using wireshark.
 
 
-SET—11
+SET 11
 
 WIRESHARK STATISTICS.
 

@@ -219,25 +219,39 @@ return 0;
 
 
 8. FCFS Scheduling
-C
 #include <stdio.h>
 int main() {
-int n = 4;
-int bt[] = {5, 8, 12, 6}; // Burst times
-int wt[4], tat[4];
-float avg_wt = 0, avg_tat = 0;
-wt[0] = 0;
-for (int i = 1; i < n; i++) wt[i] = wt[i-1] + bt[i-1];
-for (int i = 0; i < n; i++) {
-tat[i] = wt[i] + bt[i];
-avg_wt += wt[i];
-avg_tat += tat[i];
+    int n;
+    int at[10], bt[10], ct[10], wt[10], tat[10];
+    float avg_wt = 0, avg_tat = 0;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        printf("Enter Arrival Time and Burst Time for P%d: ", i + 1);
+        scanf("%d %d", &at[i], &bt[i]);
+    }
+    int current_time = 0;
+    for (int i = 0; i < n; i++) {
+        if (current_time < at[i])
+            current_time = at[i];
+        ct[i] = current_time + bt[i];
+        current_time = ct[i];
+        tat[i] = ct[i] - at[i];
+        wt[i] = tat[i] - bt[i];
+        avg_wt += wt[i];
+        avg_tat += tat[i];
+    }
+    printf("\nProcess\tAT\tBT\tWT\tTAT\n");
+    for (int i = 0; i < n; i++) {
+        printf("P%d\t%d\t%d\t%d\t%d\n",
+               i + 1, at[i], bt[i], wt[i], tat[i]);
+    }
+    printf("\nAverage Waiting Time = %.2f", avg_wt / n);
+    printf("\nAverage Turnaround Time = %.2f\n", avg_tat / n);
+
+    return 0;
 }
-printf("Process\tBurst\tWait\tTurnaround\n");
-for (int i = 0; i < n; i++) printf("P%d\t%d\t%d\t%d\n", i+1, bt[i], wt[i], tat[i]);
-printf("Avg Wait: %.2f\nAvg TAT: %.2f\n", avg_wt/n, avg_tat/n);
-return 0;
-}   
+
 
 
 

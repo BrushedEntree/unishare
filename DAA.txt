@@ -1,3 +1,29 @@
+Algorithms with Detailed Design Techniques, Time Complexity & Applications
+
+S.No	Problem	Design Technique (Detailed)	Time Complexity	Applications
+
+1	BFS – Breadth First Search	Level-order exploration of vertices using a queue. Explores all neighbors first before moving deeper. Ideal for shortest unweighted paths.	O(V + E)	Networking, shortest path, social networks, web crawlers
+2	DFS – Depth First Search	Recursive or stack-based deep exploration of all nodes along a path before backtracking. Useful in structural analysis of graphs.	O(V + E)	Detecting cycles, solving puzzles, topological sorting
+3	Linear Search	Simple brute-force sequential scan checking each element one-by-one without skipping.	O(n)	Searching unsorted lists
+4	Binary Search	Divide-and-conquer search on sorted data by repeatedly halving the search space.	O(log n)	Databases, search engines, indexing
+5	Merge Sort	Divide-and-conquer sorting: split → sort sublists → merge in sorted order. Stable and consistent.	O(n log n)	Large data sorting, external sorting
+6	Quick Sort	Partition-based divide and conquer: choose pivot → partition → sort recursively. Fast average case.	Avg: O(n log n), Worst: O(n²)	General-purpose sorting (used internally in many libraries)
+7	Max–Min (Brute Force)	Direct element-by-element comparison checking all values to find min and max.	O(n)	Statistical operations, sensor data analysis
+8	Max–Min (Divide & Conquer)	Split array → recursively find min/max → combine results, reducing comparisons.	O(n)	Optimized range analysis
+9	0/1 Knapsack (Brute Force)	Explore every possible subset of items (inclusion/exclusion), exponential growth.	O(2ⁿ)	Exact optimal selection when dataset is tiny
+10	Fractional Knapsack	Greedy technique selecting items based on value/weight ratio; items can be broken into fractions.	O(n log n)	Resource allocation with divisible goods
+11	Prim’s MST	Greedy expansion of a tree by always adding the lowest-weight edge that connects a new vertex.	O(E log V)	Network cabling, electrical grids
+12	Kruskal’s MST	Greedy selection of edges sorted by weight, forming MST without cycles (using Union-Find).	O(E log E)	Clustering, minimum wiring
+13	Dijkstra’s SSSP	Greedy relaxation choosing the next closest unvisited vertex; uses priority queue for efficiency.	O((V+E) log V)	GPS route finding, traffic navigation
+14	Floyd–Warshall APSP	Dynamic programming computes shortest paths between all pairs by incrementally considering intermediate vertices.	O(V³)	Distance matrices, routing tables
+15	Travelling Salesman Problem (DP)	Dynamic programming with bitmasking storing shortest paths for subsets of cities (Held–Karp algorithm).	O(n²·2ⁿ)	Logistics, robotics path optimization
+16	0/1 Knapsack (DP)	Bottom-up DP tabulation storing optimal value for each weight limit and item subset.	O(nW)	Budgeting, inventory control
+17	N-Queens Problem	Backtracking by placing queens row-by-row and undoing invalid placements (pruning).	O(n!)	AI, constraint satisfaction systems
+18	Hamiltonian Cycle	Backtracking path exploration checking all permutations while pruning invalid paths.	O(n!)	Route planning, cycle detection
+19	M-Coloring Problem	Backtracking assignment of colors to vertices ensuring no two adjacent nodes share a color.	O(mⁿ)	Scheduling, register allocation, puzzle solving
+
+
+
 DAA – Programs with Time & Space Complexity
 
 1. BFS(recursion)

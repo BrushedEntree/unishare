@@ -296,22 +296,31 @@ print(f"Predictions for X={X_new}: {Y_pred}")
 family = {
     'male': ['john', 'bob', 'tom', 'jim'],
     'female': ['alice', 'beth', 'susan', 'emma'],
-    'parent': [('bob', 'tom'), ('bob', 'emma'), ('alice', 'tom'), ('alice', 'emma'), ('john', 'jim'), ('beth', 'jim')],
+    'parent': [
+        ('bob', 'tom'), ('bob', 'emma'),
+        ('alice', 'tom'), ('alice', 'emma'),
+        ('john', 'jim'), ('beth', 'jim')
+    ],
 }
 
 def father(child, parent):
-    return ('male', parent) and (parent, child) in family['parent']
+    return parent in family['male'] and (parent, child) in family['parent']
 
 def mother(child, parent):
-    return ('female', parent) and (parent, child) in family['parent']
+    return parent in family['female'] and (parent, child) in family['parent']
 
 def sibling(x, y):
-    return x != y and any(p for (p1, c1) in family['parent'] for (p2, c2) in family['parent'] if c1 == x and c2 == y and p1 == p2)
+    return x != y and any(
+        p1 == p2 and c1 == x and c2 == y
+        for (p1, c1) in family['parent']
+        for (p2, c2) in family['parent']
+    )
 
 print("\nQ6a: Family Tree Queries")
 print("\nMales:", family['male'])
 print("Females:", family['female'])
 print("\nParent-Child relations:", family['parent'])
+
 print("\nIs bob father of tom?", father('tom', 'bob'))
 print("Is alice mother of emma?", mother('emma', 'alice'))
 print("Are tom and emma siblings?", sibling('tom', 'emma'))

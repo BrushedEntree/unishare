@@ -199,41 +199,22 @@ path = bfs(graph, 'A', 'F')
 print(f"\nBFS Path: {path}")
 
 # Q4b: Prolog Facts (Python simulation)
-facts = [
-    ("likes", "ram", "music"),
-    ("likes", "ram", "reading"),
-    ("likes", "shyam", "music"),
-    ("likes", "shyam", "gaming"),
-    ("likes", "ajay", "sports"),
-    ("student", "ram"),
-    ("student", "shyam"),
-    ("student", "ajay"),
-]
+prolog% Facts
+likes(john, cricket).
+likes(mary, tennis).
+works_at(john, google).
+works_at(mary, microsoft).
+friends(john, mary).
+age(john, 25).
+age(mary, 23).
 
-def query(predicate, *args):
-    results = []
-    for fact in facts:
-        if len(fact) == len((predicate,) + args):
-            if fact[0] == predicate:
-                match = True
-                for i, arg in enumerate(args):
-                    if arg != fact[i+1] and arg != '_':
-                        match = False
-                        break
-                if match:
-                    results.append(fact)
-    return results
+% Queries
+% ?- likes(john, X).         → X = cricket
+% ?- works_at(mary, X).      → X = microsoft
+% ?- friends(john, Who).     → Who = mary
+% ?- age(john, X).           → X = 25
 
-print("\nQ4b: Prolog-like Facts in Python")
-print("\nFacts defined:")
-for f in facts:
-    print(f"  {f[0]}({f[1]}, {f[2]})" if len(f) > 2 else f"  {f[0]}({f[1]})")
 
-print("\nQuery: likes(ram, X)")
-print("Results:", query("likes", "ram", "_"))
-
-print("\nQuery: likes(X, music)")
-print("Results:", query("likes", "_", "music"))
 
 # Q5a: Depth First Search (DFS)
 def dfs(graph, start, goal, visited=None, path=None):
@@ -292,38 +273,29 @@ X_new = np.array([6, 7])
 Y_pred = m * X_new + b
 print(f"Predictions for X={X_new}: {Y_pred}")
 
-# Q6a: Family Tree (Prolog simulation in Python)
-family = {
-    'male': ['john', 'bob', 'tom', 'jim'],
-    'female': ['alice', 'beth', 'susan', 'emma'],
-    'parent': [
-        ('bob', 'tom'), ('bob', 'emma'),
-        ('alice', 'tom'), ('alice', 'emma'),
-        ('john', 'jim'), ('beth', 'jim')
-    ],
-}
+# Q6a: Family Tree 
+prolog% Facts
+parent(tom, bob).
+parent(tom, liz).
+parent(bob, ann).
+parent(bob, pat).
 
-def father(child, parent):
-    return parent in family['male'] and (parent, child) in family['parent']
+male(tom). male(bob). male(pat).
+female(liz). female(ann).
 
-def mother(child, parent):
-    return parent in family['female'] and (parent, child) in family['parent']
+% Rules
+grandparent(X, Z) :- parent(X, Y), parent(Y, Z).
+father(X, Y) :- parent(X, Y), male(X).
+mother(X, Y) :- parent(X, Y), female(X).
+sibling(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
 
-def sibling(x, y):
-    return x != y and any(
-        p1 == p2 and c1 == x and c2 == y
-        for (p1, c1) in family['parent']
-        for (p2, c2) in family['parent']
-    )
+% Queries
+% ?- parent(tom, X).          → X = bob ; X = liz
+% ?- grandparent(tom, X).     → X = ann ; X = pat
+% ?- sibling(ann, pat).       → true
+% ?- father(bob, X).          → X = ann ; X = pat
 
-print("\nQ6a: Family Tree Queries")
-print("\nMales:", family['male'])
-print("Females:", family['female'])
-print("\nParent-Child relations:", family['parent'])
 
-print("\nIs bob father of tom?", father('tom', 'bob'))
-print("Is alice mother of emma?", mother('emma', 'alice'))
-print("Are tom and emma siblings?", sibling('tom', 'emma'))
 
 # Q6b: Pandas DataFrame with Missing Values
 import numpy as np

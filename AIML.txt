@@ -1,1 +1,342 @@
+# Q1a: A* Search Algorithm
+import heapq
 
+def a_star_search(graph, start, goal, heuristic):
+    open_list = [(heuristic[start], 0, start, [start])]
+    visited = set()
+    
+    while open_list:
+        f, g, node, path = heapq.heappop(open_list)
+        
+        if node == goal:
+            return path, g
+        
+        if node in visited:
+            continue
+        visited.add(node)
+        
+        for neighbor, cost in graph.get(node, []):
+            if neighbor not in visited:
+                new_g = g + cost
+                new_f = new_g + heuristic.get(neighbor, 0)
+                heapq.heappush(open_list, (new_f, new_g, neighbor, path + [neighbor]))
+    
+    return None, float('inf')
+
+# Example graph
+graph = {
+    'A': [('B', 1), ('C', 4)],
+    'B': [('D', 2), ('E', 5)],
+    'C': [('E', 2)],
+    'D': [('F', 3)],
+    'E': [('F', 1)],
+    'F': []
+}
+
+heuristic = {'A': 6, 'B': 4, 'C': 4, 'D': 3, 'E': 2, 'F': 0}
+
+path, cost = a_star_search(graph, 'A', 'F', heuristic)
+print(f"A* Path: {path}, Cost: {cost}")
+
+# Q1b: Pandas DataFrame Operations
+import pandas as pd
+
+# i. Create the DataFrame
+data = {'Name': ['A', 'B', 'C'], 'Age': [20, 21, 19], 'Marks': [78, 85, 90]}
+df = pd.DataFrame(data)
+print("\nDataFrame created:")
+print(df)
+
+# ii. Display:
+# a) Shape of the DataFrame
+print("\na) Shape:", df.shape)
+
+# b) Column names
+print("b) Columns:", df.columns.tolist())
+
+# c) Data types
+print("c) Data types:\n", df.dtypes)
+
+# d) First 2 rows
+print("d) First 2 rows:\n", df.head(2))
+
+# e) Marks column
+print("e) Marks column:\n", df['Marks'])
+
+# f) Age of student 'C'
+print("f) Age of student 'C':", df[df['Name'] == 'C']['Age'].values[0])
+
+# iii. Find max and min marks
+print("\niii. Max marks:", df['Marks'].max())
+print("Min marks:", df['Marks'].min())
+
+# Q2a: Greedy Best First Search Algorithm
+def greedy_best_first_search(graph, start, goal, heuristic):
+    open_list = [(heuristic[start], start, [start])]
+    visited = set()
+    
+    while open_list:
+        h, node, path = heapq.heappop(open_list)
+        
+        if node == goal:
+            return path
+        
+        if node in visited:
+            continue
+        visited.add(node)
+        
+        for neighbor in graph.get(node, []):
+            if neighbor not in visited:
+                heapq.heappush(open_list, (heuristic.get(neighbor, 0), neighbor, path + [neighbor]))
+    
+    return None
+
+# Example graph
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['E'],
+    'D': ['F'],
+    'E': ['F'],
+    'F': []
+}
+
+heuristic = {'A': 6, 'B': 4, 'C': 4, 'D': 3, 'E': 2, 'F': 0}
+
+path = greedy_best_first_search(graph, 'A', 'F', heuristic)
+print(f"\nGreedy Best First Search Path: {path}")
+
+# Q2b: NumPy Array Operations
+import numpy as np
+
+# i. Create 2D NumPy array
+scores = np.array([
+    [78, 85, 90],
+    [60, 70, 75],
+    [88, 92, 95],
+    [55, 65, 60],
+    [72, 80, 78]
+])
+print("\nScores array:")
+print(scores)
+
+# ii. a) Average score of each student
+print("\na) Average score of each student:", scores.mean(axis=1))
+
+# ii. b) Average score of each subject
+print("b) Average score of each subject:", scores.mean(axis=0))
+
+# iii. Highest score obtained by each student
+print("iii) Highest score of each student:", scores.max(axis=1))
+
+# Q3a: Simple Linear Regression using Least Squares Method
+X = np.array([1, 2, 3, 4, 5])
+Y = np.array([2, 4, 5, 4, 5])
+
+X_mean = np.mean(X)
+Y_mean = np.mean(Y)
+
+numerator = np.sum((X - X_mean) * (Y - Y_mean))
+denominator = np.sum((X - X_mean) ** 2)
+
+m = numerator / denominator
+b = Y_mean - m * X_mean
+
+print(f"\nLinear Regression (Least Squares): Y = {m:.2f}X + {b:.2f}")
+
+X_new = np.array([6, 7])
+Y_pred = m * X_new + b
+print(f"Predictions for X={X_new}: {Y_pred}")
+
+# Q3b: NumPy Temperature Operations
+temp = np.array([22.5, 25.1, 19.8, 30.2, 28.4, 18.9, 35.6])
+print("\nTemperature array:", temp)
+
+# ii. Display values > 25°C
+print("\nii. Temperatures > 25°C:", temp[temp > 25])
+
+# iii. Replace values < 20°C with 20
+temp[temp < 20] = 20
+print("\niii. After replacement:", temp)
+
+# iv. Mean and maximum temperature
+print("\niv. Mean temperature:", np.mean(temp))
+print("Maximum temperature:", np.max(temp))
+
+# Q4a: Breadth First Search (BFS)
+from collections import deque
+
+def bfs(graph, start, goal):
+    queue = deque([(start, [start])])
+    visited = set()
+    
+    while queue:
+        node, path = queue.popleft()
+        
+        if node == goal:
+            return path
+        
+        if node in visited:
+            continue
+        visited.add(node)
+        
+        for neighbor in graph.get(node, []):
+            if neighbor not in visited:
+                queue.append((neighbor, path + [neighbor]))
+    
+    return None
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['E'],
+    'D': ['F'],
+    'E': ['F'],
+    'F': []
+}
+
+path = bfs(graph, 'A', 'F')
+print(f"\nBFS Path: {path}")
+
+# Q4b: Prolog Facts (Python simulation)
+facts = [
+    ("likes", "ram", "music"),
+    ("likes", "ram", "reading"),
+    ("likes", "shyam", "music"),
+    ("likes", "shyam", "gaming"),
+    ("likes", "ajay", "sports"),
+    ("student", "ram"),
+    ("student", "shyam"),
+    ("student", "ajay"),
+]
+
+def query(predicate, *args):
+    results = []
+    for fact in facts:
+        if len(fact) == len((predicate,) + args):
+            if fact[0] == predicate:
+                match = True
+                for i, arg in enumerate(args):
+                    if arg != fact[i+1] and arg != '_':
+                        match = False
+                        break
+                if match:
+                    results.append(fact)
+    return results
+
+print("\nQ4b: Prolog-like Facts in Python")
+print("\nFacts defined:")
+for f in facts:
+    print(f"  {f[0]}({f[1]}, {f[2]})" if len(f) > 2 else f"  {f[0]}({f[1]})")
+
+print("\nQuery: likes(ram, X)")
+print("Results:", query("likes", "ram", "_"))
+
+print("\nQuery: likes(X, music)")
+print("Results:", query("likes", "_", "music"))
+
+# Q5a: Depth First Search (DFS)
+def dfs(graph, start, goal, visited=None, path=None):
+    if visited is None:
+        visited = set()
+    if path is None:
+        path = []
+    
+    path.append(start)
+    visited.add(start)
+    
+    if start == goal:
+        return path
+    
+    for neighbor in graph.get(start, []):
+        if neighbor not in visited:
+            result = dfs(graph, neighbor, goal, visited, path)
+            if result:
+                return result
+    
+    path.pop()
+    return None
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['E'],
+    'D': ['F'],
+    'E': ['F'],
+    'F': []
+}
+
+path = dfs(graph, 'A', 'F')
+print(f"\nDFS Path: {path}")
+
+# Q5b: Linear Regression using Gradient Descent Method
+X = np.array([1, 2, 3, 4, 5])
+Y = np.array([2, 4, 5, 4, 5])
+
+m = 0
+b = 0
+learning_rate = 0.01
+n = len(X)
+iterations = 1000
+
+for i in range(iterations):
+    Y_pred = m * X + b
+    dm = (-2/n) * sum(X * (Y - Y_pred))
+    db = (-2/n) * sum(Y - Y_pred)
+    m = m - learning_rate * dm
+    b = b - learning_rate * db
+
+print(f"\nLinear Regression (Gradient Descent): Y = {m:.4f}X + {b:.4f}")
+
+X_new = np.array([6, 7])
+Y_pred = m * X_new + b
+print(f"Predictions for X={X_new}: {Y_pred}")
+
+# Q6a: Family Tree (Prolog simulation in Python)
+family = {
+    'male': ['john', 'bob', 'tom', 'jim'],
+    'female': ['alice', 'beth', 'susan', 'emma'],
+    'parent': [('bob', 'tom'), ('bob', 'emma'), ('alice', 'tom'), ('alice', 'emma'), ('john', 'jim'), ('beth', 'jim')],
+}
+
+def father(child, parent):
+    return ('male', parent) and (parent, child) in family['parent']
+
+def mother(child, parent):
+    return ('female', parent) and (parent, child) in family['parent']
+
+def sibling(x, y):
+    return x != y and any(p for (p1, c1) in family['parent'] for (p2, c2) in family['parent'] if c1 == x and c2 == y and p1 == p2)
+
+print("\nQ6a: Family Tree Queries")
+print("\nMales:", family['male'])
+print("Females:", family['female'])
+print("\nParent-Child relations:", family['parent'])
+print("\nIs bob father of tom?", father('tom', 'bob'))
+print("Is alice mother of emma?", mother('emma', 'alice'))
+print("Are tom and emma siblings?", sibling('tom', 'emma'))
+
+# Q6b: Pandas DataFrame with Missing Values
+import numpy as np
+
+# i. Create DataFrame
+data = {'Name': ['A', 'B', 'C', 'D', 'E'], 
+        'Age': [20, np.nan, 19, 21, np.nan], 
+        'Marks': [78, 85, np.nan, 88, 76]}
+df = pd.DataFrame(data)
+print("\n\nQ6b: Original DataFrame:")
+print(df)
+
+# ii. Check for missing values
+print("\nii. Missing values check:")
+print(df.isnull())
+print("\nTotal missing values:", df.isnull().sum().sum())
+
+# iii. Replace missing values
+df['Age'] = df['Age'].fillna(df['Age'].mean())
+df['Marks'] = df['Marks'].fillna(df['Marks'].mean())
+
+# iv. Display updated DataFrame and average Marks
+print("\niii & iv. Updated DataFrame:")
+print(df)
+print("\nAverage Marks:", df['Marks'].mean())
